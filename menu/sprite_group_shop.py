@@ -5,7 +5,7 @@ class Switchskins(pygame.sprite.Sprite):  # рисовка спрайтов, и 
     def __init__(self, screen):
         super().__init__()
         self.image_skins = [
-            "menu_img/m.png", "menu_img/sprite_1.png", "menu_img/sprite_2.png", "menu_img/sprite_3.png"
+             "menu_img/sprite_1.png", "menu_img/sprite_2.png", "menu_img/sprite_3.png", "menu_img/sprite_4.png"
         ]
         self.image_button = ["menu_img/Selected.png", "menu_img/Choose.png", "menu_img/Buy.png"]
         self.screen = screen
@@ -71,7 +71,7 @@ class Switchskins(pygame.sprite.Sprite):  # рисовка спрайтов, и 
         self.sprite_skins_pe = pygame.sprite.Sprite(self.all_sprite)
         self.sprite_skins_pe.image = pygame.image.load(image_but)
         self.sprite_skins_pe.rect = self.sprite_skins_pe.image.get_rect()
-        if image_but == "menu_img/Выбрать.png":
+        if image_but == "menu_img/Choose.png":
             self.sprite_skins_pe.rect.x = 580
             self.sprite_skins_pe.rect.y = 680
         else:
