@@ -4,7 +4,7 @@ import time
 from controls import loading, transition_figure
 from background_menu_anim import BACKGOUND_MENU
 from game import Game, LevelOne
-from player import PlayerTask, PlayerGame
+from players import PlayerTask, PlayerGame, Bot
 from mob import Mob
 
 
@@ -31,7 +31,7 @@ class SpritesWindow:
             sprites_list = []
             game = Game(screen)
             start_game = True
-            for i in range(12):
+            for i in range(11):
                 m = Mob()
                 snows.add(m)
                 mobs.add(m)
@@ -199,9 +199,13 @@ def update_screen(screen, background_menu, buttons_menu, start_game, game, playe
         game.draw_sprite(level)
         players[1].update()  # PlayerGame
         players[1].output()
+        players[2].output()
+        players[2].update()  # Bot
         if level == 1:
             score = levels[0].get_score()
-            players[1].check_score(score)
+            positions = players[1].check_score(score)
+            players[2].check_time()
+            players[2].check_pos_player_game(positions)
             time_level = levels[0].get_time_level()
             if score < 100 and time_level < 114:
                 players[0].move()  # PlayerTask
@@ -211,6 +215,9 @@ def update_screen(screen, background_menu, buttons_menu, start_game, game, playe
                 levels[0].draw_score()
             levels[0].draw_time_level()
             if time_level > 114:
+                if players[2].sub_level != 3:
+                    players[2].failed()
+                    players[2].output()
                 if score == 100:
                     game.next_level()
                     time.sleep(1)
@@ -224,6 +231,7 @@ def update_screen(screen, background_menu, buttons_menu, start_game, game, playe
                         transition_figure(screen)
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
+                        players[2] = Bot(screen)
                         levels[0].time_level = 0
     pygame.display.flip()
 
@@ -243,7 +251,7 @@ def run():
     clock = pygame.time.Clock()
     background_menu_anim_count = 0
     SpritesWindow(screen, 'menu').draw_buttons()
-    players = [PlayerTask(screen), PlayerGame(screen)]
+    players = [PlayerTask(screen), PlayerGame(screen), Bot(screen)]
     levels = [LevelOne(snows, mobs, screen, players[0]), None, None]
     while True:
         events(sprites_list, start_game, players[0])
