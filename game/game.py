@@ -101,7 +101,7 @@ class LevelOne:
         self.score = 0
 
     def draw_time_level(self):
-        self.time_level += 1
+        self.time_level += 0.02
         if round(self.time_level) < 116:
             color_time = pygame.Color(216, 209, 70)
             pygame.draw.rect(self.screen, color_time,
