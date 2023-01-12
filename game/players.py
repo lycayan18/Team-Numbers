@@ -58,23 +58,23 @@ class PlayerGame(pygame.sprite.Sprite):
             self.rect.x = 1100
             self.rect.y = 561
             self.positions_list[0] = True
-            if clicked_sound_effects:
-                sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
-                sound.play()
+            # if clicked_sound_effects:
+            #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
+            #     sound.play()
         elif score == 70 and self.positions_list[1] is False:
             self.rect.x = 1035
             self.rect.y = 379
             self.positions_list[1] = True
-            if clicked_sound_effects:
-                sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
-                sound.play()
+            # if clicked_sound_effects:
+            #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
+            #     sound.play()
         elif score == 100:
             self.rect.x = 1035
             self.rect.y = 180
             self.positions_list[2] = True
-            if clicked_sound_effects:
-                sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
-                sound.play()
+            # if clicked_sound_effects:
+            #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
+            #     sound.play()
         return self.positions_list
 
     def failed(self):
@@ -100,9 +100,9 @@ class Bot(PlayerGame):
         if self.time_move <= 0:
             self.sub_level += 1
             self.time_move = random.randint(1500, 3500)
-            if clicked_sound_effects:
-                sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
-                sound.play()
+            # if clicked_sound_effects:
+            #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[1]}")
+            #     sound.play()
 
     def check_pos_player_game(self, positions_list):
         if self.sub_level == 1 and positions_list[0] is False:

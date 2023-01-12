@@ -70,9 +70,9 @@ class LevelOne:
 
     def check_mobs_contact(self):
         if pygame.sprite.spritecollide(self.player, self.mobs, True):
-            if clicked_sound_effects:
-                sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[0]}")
-                sound.play()
+            # if clicked_sound_effects:
+            #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[0]}")
+            #     sound.play()
             if self.score > 0:
                 self.score -= 5
                 self.time_score = 200
@@ -84,9 +84,9 @@ class LevelOne:
             self.time_score -= 1
             if self.time_score == 0:
                 self.score += 5
-                if clicked_sound_effects:
-                    sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[2]}")
-                    sound.play()
+                # if clicked_sound_effects:
+                #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[2]}")
+                #     sound.play()
                 self.time_score = 200
 
     def draw_score(self):
@@ -101,7 +101,7 @@ class LevelOne:
         self.score = 0
 
     def draw_time_level(self):
-        self.time_level += 0.02
+        self.time_level += 1
         if round(self.time_level) < 116:
             color_time = pygame.Color(216, 209, 70)
             pygame.draw.rect(self.screen, color_time,

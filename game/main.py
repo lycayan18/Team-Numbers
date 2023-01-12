@@ -33,7 +33,7 @@ class SpritesWindow:
             list_buttons = []
             game = Game(screen)
             start_game = True
-            for i in range(11):
+            for i in range(9):
                 m = Mob()
                 snows.add(m)
                 mobs.add(m)
@@ -145,7 +145,7 @@ class ButtonExit(pygame.sprite.Sprite):
         event = args[0]
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
             with open("score_button", "w") as s:
-                s.write(str(score) + "\n")
+                s.write(str(money) + "\n")
                 s.write(str(b))
             sys.exit()
         if event.type == pygame.MOUSEMOTION and self.rect.collidepoint(event.pos):
@@ -220,7 +220,7 @@ class BackShop(BackButton, Switchskins):
                 Switchskins(self.screen).skins_per(self.image_)
                 Switchskins(self.screen).purchase_button(self.image_button_skins)
                 self.all_sprite.draw(self.screen)
-            self.draw_text(screen, str(score), 65)  # рисовка счёта монет
+            self.draw_text(screen, str(money), 65)  # рисовка счёта монет
             pygame.display.flip()
 
     def update(self, *args, **kwargs) -> None:
@@ -271,15 +271,15 @@ class BackShop(BackButton, Switchskins):
                         if self.button_choose__[_] == 0 and _ != self.skins:
                             self.button_choose__[_] = 1
                 if self.image_but == 2:
-                    global score
-                    if (self.skins == 1 or self.skins == -3) and score - self.skins_price[0] >= 0:
-                        score -= self.skins_price[0]
+                    global money
+                    if (self.skins == 1 or self.skins == -3) and money - self.skins_price[0] >= 0:
+                        money -= self.skins_price[0]
                         self.image_but = 1
-                    if (self.skins == 2 or self.skins == -2) and score - self.skins_price[1] >= 0:
-                        score -= self.skins_price[1]
+                    if (self.skins == 2 or self.skins == -2) and money - self.skins_price[1] >= 0:
+                        money -= self.skins_price[1]
                         self.image_but = 1
-                    if (self.skins == 3 or self.skins == -1) and score - self.skins_price[2] >= 0:
-                        score -= self.skins_price[2]
+                    if (self.skins == 3 or self.skins == -1) and money - self.skins_price[2] >= 0:
+                        money -= self.skins_price[2]
                         self.image_but = 1
                     self.button_choose__[self.skins] = self.image_but
 
@@ -307,6 +307,7 @@ def events(buttons_menu, game_start, player_task):
 
 
 def update_screen(screen, buttons_menu, start_game, game, players, levels):
+    global money
     """обновление экрана"""
     if start_game:
         level = game.get_level()
@@ -318,8 +319,8 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
         players[2].output()
         players[2].update()  # Bot
         if level == 1:
-            score_level = levels[0].get_score()
-            positions = players[1].check_score(score_level)
+            score = levels[0].get_score()
+            positions = players[1].check_score(score)
             players[2].check_time()
             players[2].check_pos_player_game(positions)
             time_level = levels[0].get_time_level()
@@ -333,22 +334,30 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
             if time_level > 114:
                 if score == 100:
                     if players[2].sub_level != 3:
-                        levels[0].score_reset()
-                        players[2].failed()
-                        players[2].output()
                         time.sleep(1)
                         transition_figure(screen)
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
                         players[2] = Bot(screen)
                         levels[0].time_level = 0
+                        money += 25
                     else:
-                        game.next_level()
                         time.sleep(1)
                         transition_figure(screen)
+                        SpritesWindow(screen, 'menu').draw_buttons()
+                        players[1] = PlayerGame(screen)
+                        players[2] = Bot(screen)
+                        levels[0].time_level = 0
+                        money += 40
+                        # game.next_level()
+                        # time.sleep(1)
+                        # players[1].reset()
+                        # players[2].reset()
+                        # transition_figure(screen)
                 else:
                     levels[0].score_reset()
                     if players[2].sub_level != 3:
+                        levels[0].score_reset()
                         players[2].failed()
                         players[2].output()
                     fail = players[1].failed()
@@ -357,7 +366,10 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                         time.sleep(1)
                         transition_figure(screen)
                         SpritesWindow(screen, 'menu').draw_buttons()
+                        players[1] = PlayerGame(screen)
+                        players[2] = Bot(screen)
                         levels[0].time_level = 0
+                        money += 10
         elif level == 2:
             pass
         elif level == 3:
@@ -385,8 +397,8 @@ mobs = pygame.sprite.Group()
 with open("score_button", "r") as sc:
     sc = sc.read().split("\n")
     im = sc[1].replace("[", "").replace("]", "").replace(",", "").split()
-    score = sc[0]
-    score = int(score)  # количество монет
+    money = sc[0]
+    money = int(money)  # количество монет
     image_button = []
     for i in range(len(im)):
         image_button.append(int(im[i]))
