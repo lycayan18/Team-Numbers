@@ -1,11 +1,19 @@
 import pygame
 
 pygame.init()
-# pygame.mixer.music.load("music_and_sound_effects/music_menu.mp3")
-# pygame.mixer.music.play(-1)
+pygame.mixer.music.load("music_and_sound_effects/music_menu.mp3")
+pygame.mixer.music.play(-1)
 sound_click = pygame.mixer.Sound('music_and_sound_effects/SoundClick.ogg')
 sound_hover = pygame.mixer.Sound('music_and_sound_effects/Sound1.ogg')
-game_sound = ["uuff.mp3", "sound_pop.mp3", "sound_score+.mp3"]
+game_sound = ["sound_application_ points.mp3",
+              "sound_transition_new_sublevel.mp3",
+              "sound_score+.mp3",
+              "sound_impact.mp3",
+              "sound_alarm.mp3",
+              "sound _boxing _gong.mp3",
+              "game_over.mp3",
+              "sound_victory.mp3",
+              "coins.mp3"]
 clicked_music = True
 clicked_sound_effects = True
 

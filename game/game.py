@@ -63,6 +63,7 @@ class LevelOne:
         self.mobs = mobs
         self.time_score = 200
         self.time_level = 0
+        self.sound_effect_level = [True, True]
 
     def draw_snows(self):
         self.snows.update()
@@ -70,13 +71,13 @@ class LevelOne:
 
     def check_mobs_contact(self):
         if pygame.sprite.spritecollide(self.player, self.mobs, True):
-            # if clicked_sound_effects:
-            #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[0]}")
-            #     sound.play()
             if self.score > 0:
                 self.score -= 5
+                if clicked_sound_effects:
+                    sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[3]}')
+                    sound.play()
                 self.time_score = 200
-                for i in range(2):
+                for i in range(1):
                     m = Mob()
                     self.snows.add(m)
                     self.mobs.add(m)
@@ -84,9 +85,9 @@ class LevelOne:
             self.time_score -= 1
             if self.time_score == 0:
                 self.score += 5
-                # if clicked_sound_effects:
-                #     sound = pygame.mixer.Sound(f"music_and_sound_effects/{game_sound[2]}")
-                #     sound.play()
+                if clicked_sound_effects:
+                    sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[0]}')
+                    sound.play()
                 self.time_score = 200
 
     def draw_score(self):
@@ -102,13 +103,23 @@ class LevelOne:
 
     def draw_time_level(self):
         self.time_level += 0.02
-        if round(self.time_level) < 116:
+        if round(self.time_level) < 114:
+            if round(self.time_level >= 110) and clicked_sound_effects and self.sound_effect_level[0]:
+                sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[4]}')
+                sound.play()
+                self.sound_effect_level[0] = False
             color_time = pygame.Color(216, 209, 70)
             pygame.draw.rect(self.screen, color_time,
                              (pygame.display.Info().current_w // 2 + 73, 33, self.time_level, 15),
                              border_radius=15)
+        else:
+            if clicked_sound_effects and self.sound_effect_level[1]:
+                sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[5]}')
+                sound.play()
+                self.sound_effect_level[1] = False
 
     def get_time_level(self):
         return self.time_level
+
 
 

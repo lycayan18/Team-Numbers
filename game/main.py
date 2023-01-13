@@ -4,7 +4,7 @@ import random
 import time
 from controls import button, draw_particle, update_particle,  loading, transition_figure
 from sprite_group_shop import Switchskins
-from Settings import clicked_music, clicked_sound_effects, sound_click, Music, SoundEffects
+from Settings import clicked_sound_effects, sound_click, Music, SoundEffects, game_sound
 from game import Game, LevelOne
 from players import PlayerTask, PlayerGame, Bot
 from mob import Mob
@@ -26,6 +26,7 @@ class SpritesWindow:
             start_game = False
         elif self.command == 'start_game':
             """игра"""
+            pygame.mixer.music.stop()
             transition_figure(screen)
             loading(screen)
             transition_figure(screen)
@@ -336,6 +337,9 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                     if players[2].sub_level != 3:
                         time.sleep(1)
                         transition_figure(screen)
+                        if clicked_sound_effects:
+                            sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
+                            sound.play()
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
                         players[2] = Bot(screen)
@@ -343,6 +347,9 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                         money += 25
                     else:
                         time.sleep(1)
+                        if clicked_sound_effects:
+                            sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
+                            sound.play()
                         transition_figure(screen)
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
@@ -364,6 +371,9 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                     players[1].output()
                     if fail:
                         time.sleep(1)
+                        if clicked_sound_effects:
+                            sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
+                            sound.play()
                         transition_figure(screen)
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
