@@ -340,6 +340,7 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                         if clicked_sound_effects:
                             sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
                             sound.play()
+                        pygame.mixer.music.play()
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
                         players[2] = Bot(screen)
@@ -350,6 +351,7 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                         if clicked_sound_effects:
                             sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
                             sound.play()
+                        pygame.mixer.music.play()
                         transition_figure(screen)
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
@@ -374,6 +376,7 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                         if clicked_sound_effects:
                             sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
                             sound.play()
+                        pygame.mixer.music.play()
                         transition_figure(screen)
                         SpritesWindow(screen, 'menu').draw_buttons()
                         players[1] = PlayerGame(screen)
