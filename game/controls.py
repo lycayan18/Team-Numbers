@@ -23,7 +23,7 @@ def update_particle(screen):
 
 
 def loading(screen):
-    manual = ["game_img/manual_1.jpg"]
+    manual = ["game_img/manual_1.jpg", "game_img/manual_2.jpg", "game_img/manual_3.jpg"]
     image = pygame.image.load(random.choice(manual))
     image = pygame.transform.scale(image, (pygame.display.Info().current_w, pygame.display.Info().current_h))
     h = pygame.display.Info().current_h
@@ -33,7 +33,7 @@ def loading(screen):
     while round(percentages) < 1500:
         pygame.draw.rect(screen, (255, 255, 255), (10, h - 20, w - 10, 20), 2)
         pygame.draw.rect(screen, (255, 255, 255), (10, h - 21, int(percentages), 19))
-        percentages += 110 / 60
+        percentages += 80 / 60
         pygame.display.flip()
 
 

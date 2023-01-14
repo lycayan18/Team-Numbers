@@ -5,7 +5,7 @@ import time
 from controls import button, draw_particle, update_particle, loading, transition_figure
 from sprite_group_shop import Switchskins
 from Settings import clicked_sound_effects, sound_click, Music, SoundEffects, game_sound
-from game import Game, LevelOne, LevelThree
+from game import Game, LevelOne, LevelTwo
 from players import PlayerTask, PlayerGame, Bot
 from mobs import Mob, IceMob
 
@@ -530,7 +530,7 @@ def run():
     clock = pygame.time.Clock()
     SpritesWindow(screen, 'menu').draw_buttons()
     players = [PlayerTask(screen), PlayerGame(screen), Bot(screen)]
-    levels = [LevelOne(snows, mobs, screen, players[0]), LevelThree(ice, ice_mobs, screen, players[0])]
+    levels = [LevelOne(snows, mobs, screen, players[0]), LevelTwo(ice, ice_mobs, screen, players[0])]
     while True:
         events(list_buttons, start_game, players[0], game)
         update_screen(

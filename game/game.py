@@ -51,8 +51,6 @@ class Game:
             self.screen.blit(pygame.image.load("game_img/round_01.png"), (self.width_screen // 2 + 10, 80))
         elif level == 2:
             self.screen.blit(pygame.image.load("game_img/round_02.png"), (self.width_screen // 2 + 10, 80))
-        else:
-            self.screen.blit(pygame.image.load("game_img/round_03.png"), (self.width_screen // 2 + 10, 80))
         self.draw_sublevel()
 
     def draw_sublevel(self):
@@ -128,7 +126,7 @@ class LevelOne:
         return self.time_level
 
 
-class LevelThree:
+class LevelTwo:
     def __init__(self, ice, ice_mobs, screen, player):
         self.ice = ice
         self.ice_mobs = ice_mobs
