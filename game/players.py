@@ -13,6 +13,11 @@ class PlayerTask(pygame.sprite.Sprite):
         self.rect.y = pygame.display.Info().current_h - 75
         self.mright = False
         self.mleft = False
+        self.snow_x = -300
+        self.ice_rect = 0
+        self.mspace = False
+        self.coll = False
+        self.positions_list = [False, False]
 
     def output(self):
         """рисование игрока на экране"""
@@ -22,13 +27,24 @@ class PlayerTask(pygame.sprite.Sprite):
     def update(self, *args, **kwargs) -> None:
         pass
 
-    def move(self):
-        if self.mright:
-            if self.rect.x <= 627:
-                self.rect.x += 7
-        elif self.mleft:
-            if self.rect.x > 4:
-                self.rect.x -= 7
+    def move(self, command):
+        if command:
+            if self.mright:
+                if self.rect.x <= 627:
+                    self.rect.x += 7
+            elif self.mleft:
+                if self.rect.x > 4:
+                    self.rect.x -= 7
+        else:
+            if self.mspace:
+                if 510 < self.rect.y <= 650:
+                    self.rect.y -= 20
+                if self.rect.y == 510 or self.rect.y == 500:
+                    self.mspace = False
+            else:
+                if (self.rect.y > 509 or self.rect.y == 500) and self.rect.y != 650:
+                    self.mspace = False
+                    self.rect.y += 10
 
 
 class PlayerGame(pygame.sprite.Sprite):
@@ -98,6 +114,9 @@ class PlayerGame(pygame.sprite.Sprite):
         self.rect.x = 1160
         self.rect.y = 740
         self.positions_sublevel_list = [False, False, False]
+        self.current_positions = [False, False, False]
+        self.sound_effect_play = True
+        self.speedy = 3
 
 
 class Bot:
@@ -109,16 +128,16 @@ class Bot:
         self.rect.y = 715
         self.speedy = 3
         self.sub_level = 0
-        self.time_move = random.randint(1500, 2500)
+        self.time_move = random.randint(1500, 2000)
 
     def check_time(self):
         self.time_move -= 1
-        if self.time_move <= 0:
+        if self.time_move <= 0 and self.sub_level != 3:
             self.sub_level += 1
             if clicked_sound_effects:
                 sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[1]}')
                 sound.play()
-            self.time_move = random.randint(1500, 2500)
+            self.time_move = random.randint(1500, 2000)
 
     def check_pos_player_game(self, positions_list):
         if self.sub_level == 1 and positions_list[0] is False:
@@ -144,6 +163,7 @@ class Bot:
         self.rect.x = 1060
         self.rect.y = 715
         self.sub_level = 0
+        self.speedy = 3
 
     def failed(self):
         if self.rect.y < pygame.display.Info().current_h + 20:

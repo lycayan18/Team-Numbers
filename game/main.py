@@ -5,9 +5,9 @@ import time
 from controls import button, draw_particle, update_particle,  loading, transition_figure
 from sprite_group_shop import Switchskins
 from Settings import clicked_sound_effects, sound_click, Music, SoundEffects, game_sound
-from game import Game, LevelOne
+from game import Game, LevelOne, LevelThree
 from players import PlayerTask, PlayerGame, Bot
-from mob import Mob
+from mobs import Mob, IceMob
 
 
 class SpritesWindow:
@@ -32,12 +32,18 @@ class SpritesWindow:
             transition_figure(screen)
 
             list_buttons = []
-            game = Game(screen)
+            game = Game(screen, snow_image)
             start_game = True
+
             for i in range(9):
                 m = Mob()
                 snows.add(m)
                 mobs.add(m)
+
+            for i in range(3):
+                m = IceMob()
+                ice.add(m)
+                ice_mobs.add(m)
         elif self.command == 'settings':
             """настройки"""
             list_buttons = [BackButton(self.screen), SoundEffects(self.screen), Music(self.screen)]
@@ -285,32 +291,46 @@ class BackShop(BackButton, Switchskins):
                     self.button_choose__[self.skins] = self.image_but
 
 
-def events(buttons_menu, game_start, player_task):
+ice_time = pygame.USEREVENT + 1
+pygame.time.set_timer(ice_time, random.randint(3000, 4500))
+ice_image_list = []
+player_x_y, ice_x_y = (50, 0), (0, 645)
+
+
+def events(buttons_menu, game_start, player_task, game):
     """"обработка событий"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         if len(buttons_menu) > 0:
-            for i in buttons_menu:
-                i.update(event)
+            for button in buttons_menu:
+                button.update(event)
         if game_start:
+            level = game.get_level()
             if event.type == pygame.KEYDOWN:
-                pressed = pygame.key.get_pressed()
-                if pressed[pygame.K_LEFT]:
-                    player_task.mleft = True
-                    player_task.mright = False
-                elif pressed[pygame.K_RIGHT]:
-                    player_task.mright = True
-                    player_task.mleft = False
+                if level == 1:
+                    pressed = pygame.key.get_pressed()
+                    if pressed[pygame.K_LEFT]:
+                        player_task.mleft = True
+                        player_task.mright = False
+                    elif pressed[pygame.K_RIGHT]:
+                        player_task.mright = True
+                        player_task.mleft = False
+                else:
+                    if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+                        player_task.mspace = True
             else:
                 player_task.mleft = False
                 player_task.mright = False
 
 
-def update_screen(screen, buttons_menu, start_game, game, players, levels):
-    global money
+snow_image = pygame.image.load("game_img/snow_run.png")
+
+
+def update_screen(screen, buttons_menu, start, game, players, levels):
+    global money, start_game
     """обновление экрана"""
-    if start_game:
+    if start:
         level = game.get_level()
         game.draw_playing_field()
         game.draw_sublevel()
@@ -321,12 +341,12 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
         players[2].update()  # Bot
         if level == 1:
             score = levels[0].get_score()
+            time_level = levels[0].get_time_level()
             positions = players[1].check_score(score)
             players[2].check_time()
             players[2].check_pos_player_game(positions)
-            time_level = levels[0].get_time_level()
             if score < 100 and time_level < 114:
-                players[0].move()  # PlayerTask
+                players[0].move(True)  # PlayerTask
                 players[0].output()
                 levels[0].draw_snows()
                 levels[0].check_mobs_contact()
@@ -336,57 +356,134 @@ def update_screen(screen, buttons_menu, start_game, game, players, levels):
                 if score == 100:
                     if players[2].sub_level != 3:
                         time.sleep(1)
-                        transition_figure(screen)
-                        if clicked_sound_effects:
-                            sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
-                            sound.play()
-                        pygame.mixer.music.play()
-                        SpritesWindow(screen, 'menu').draw_buttons()
-                        players[1] = PlayerGame(screen)
-                        players[2] = Bot(screen)
-                        levels[0].time_level = 0
-                        money += 25
+                        levels[0].reset_score()
+                        fail = players[2].failed()
+                        players[2].output()
+                        if fail:
+                            time.sleep(1)
+                            transition_figure(screen)
+                            pygame.mixer.music.play()
+                            SpritesWindow(screen, 'menu').draw_buttons()
+                            if clicked_sound_effects:
+                                sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
+                                sound.play()
+                            money += 20
+                            levels[0].time_level = 0
+                            levels[0].sound_effect_level = True
+                            players[1].reset()
+                            players[2].reset()
+                            players[0].rect.y = pygame.display.Info().current_h - 75
+                            players[0].rect.x = pygame.display.Info().current_w // 2 - 450
+                            start_game = False
                     else:
+                        game.next_level()
+                        players[1].reset()
+                        players[2].reset()
+                        players[0].rect.y = 650
+                        players[0].rect.x = 50
                         time.sleep(1)
-                        if clicked_sound_effects:
-                            sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
-                            sound.play()
-                        pygame.mixer.music.play()
                         transition_figure(screen)
-                        SpritesWindow(screen, 'menu').draw_buttons()
-                        players[1] = PlayerGame(screen)
-                        players[2] = Bot(screen)
-                        levels[0].time_level = 0
-                        money += 40
-                        # game.next_level()
-                        # time.sleep(1)
-                        # players[1].reset()
-                        # players[2].reset()
-                        # transition_figure(screen)
                 else:
-                    levels[0].score_reset()
+                    levels[0].reset_score()
                     if players[2].sub_level != 3:
-                        levels[0].score_reset()
                         players[2].failed()
                         players[2].output()
                     fail = players[1].failed()
                     players[1].output()
                     if fail:
                         time.sleep(1)
+                        transition_figure(screen)
+                        pygame.mixer.music.play()
+                        SpritesWindow(screen, 'menu').draw_buttons()
                         if clicked_sound_effects:
                             sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
                             sound.play()
-                        pygame.mixer.music.play()
-                        transition_figure(screen)
-                        SpritesWindow(screen, 'menu').draw_buttons()
-                        players[1] = PlayerGame(screen)
-                        players[2] = Bot(screen)
-                        levels[0].time_level = 0
                         money += 10
+                        levels[0].time_level = 0
+                        levels[0].sound_effect_level = True
+                        players[1].reset()
+                        players[2].reset()
+                        players[0].rect.y = pygame.display.Info().current_h - 75
+                        players[0].rect.x = pygame.display.Info().current_w // 2 - 450
+                        start_game = False
+
         elif level == 2:
-            pass
-        elif level == 3:
-            pass
+            score = levels[1].get_score()
+            time_level = levels[1].get_time_level()
+            positions = players[1].check_score(score)
+            players[2].check_time()
+            players[2].check_pos_player_game(positions)
+            if time_level < 114 and score != 100:
+                players[0].move(False)  # PlayerTask
+                players[0].output()
+                levels[1].draw_snows()
+                levels[1].check_mobs_contact()
+                levels[1].draw_score()
+            levels[1].draw_time_level()
+            if score == 100:
+                if players[2].sub_level != 3:
+                    time.sleep(1)
+                    levels[1].score_reset()
+                    players[2].failed()
+                    players[2].output()
+                time.sleep(1.5)
+                transition_figure(screen)
+                pygame.mixer.music.play()
+                SpritesWindow(screen, 'menu').draw_buttons()
+                if clicked_sound_effects:
+                    sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
+                    sound.play()
+                money += 40
+                levels[1].time_level = 0
+                levels[0].sound_effect_level = True
+                players[1].reset()
+                players[2].reset()
+                players[0].rect.y = pygame.display.Info().current_h - 75
+                players[0].rect.x = pygame.display.Info().current_w // 2 - 450
+                start_game = False
+            elif players[2].sub_level == 3:
+                levels[1].score_reset()
+                fail = players[1].failed()
+                players[1].output()
+                if fail:
+                    time.sleep(1)
+                    transition_figure(screen)
+                    pygame.mixer.music.play()
+                    SpritesWindow(screen, 'menu').draw_buttons()
+                    if clicked_sound_effects:
+                        sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
+                        sound.play()
+                    money += 30
+                    levels[1].time_level = 0
+                    levels[0].sound_effect_level = True
+                    players[1].reset()
+                    players[2].reset()
+                    players[0].rect.y = pygame.display.Info().current_h - 75
+                    players[0].rect.x = pygame.display.Info().current_w // 2 - 450
+                    start_game = False
+            elif time_level >= 114:
+                levels[1].score_reset()
+                if players[2].sub_level != 3:
+                    players[2].failed()
+                    players[2].output()
+                fail = players[1].failed()
+                players[1].output()
+                if fail:
+                    time.sleep(1)
+                    transition_figure(screen)
+                    pygame.mixer.music.play()
+                    SpritesWindow(screen, 'menu').draw_buttons()
+                    if clicked_sound_effects:
+                        sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[8]}')
+                        sound.play()
+                    money += 30
+                    levels[1].time_level = 0
+                    levels[0].sound_effect_level = True
+                    players[1].reset()
+                    players[2].reset()
+                    players[0].rect.y = pygame.display.Info().current_h - 75
+                    players[0].rect.x = pygame.display.Info().current_w // 2 - 450
+                    start_game = False
     else:
         screen.blit(pygame.image.load("menu_img/layer_1.jpg"), (0, 0))
         mx, my = (random.randint(0, pygame.display.Info().current_w),
@@ -407,6 +504,9 @@ game = None
 snows = pygame.sprite.Group()
 mobs = pygame.sprite.Group()
 
+ice = pygame.sprite.Group()
+ice_mobs = pygame.sprite.Group()
+
 with open("score_button", "r") as sc:
     sc = sc.read().split("\n")
     im = sc[1].replace("[", "").replace("]", "").replace(",", "").split()
@@ -424,9 +524,9 @@ def run():
     clock = pygame.time.Clock()
     SpritesWindow(screen, 'menu').draw_buttons()
     players = [PlayerTask(screen), PlayerGame(screen), Bot(screen)]
-    levels = [LevelOne(snows, mobs, screen, players[0]), None, None]
+    levels = [LevelOne(snows, mobs, screen, players[0]), LevelThree(ice, ice_mobs, screen, players[0])]
     while True:
-        events(list_buttons, start_game, players[0])
+        events(list_buttons, start_game, players[0], game)
         update_screen(
             screen,
             list_buttons,
@@ -440,4 +540,5 @@ def run():
 
 if __name__ == '__main__':
     run()
+
 

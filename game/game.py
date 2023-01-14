@@ -1,14 +1,16 @@
 import pygame
-from mob import Mob
+from mobs import Mob, IceMob
 from Settings import game_sound, clicked_sound_effects
 
 
 class Game:
-    def __init__(self, screen):
+    def __init__(self, screen, snow):
         self.screen = screen
         self.level = 1
         self.height_screen = pygame.display.Info().current_h
         self.width_screen = pygame.display.Info().current_w
+        self.snow = snow
+        self.snow_x = 0
 
     def get_level(self):
         return self.level
@@ -23,6 +25,15 @@ class Game:
         pygame.draw.rect(self.screen, color_tasks_field, (0, 0, self.width_screen // 2, self.height_screen))
         color_tasks_field = pygame.Color(0, 0, 0)
         pygame.draw.rect(self.screen, color_tasks_field, (0, 0, self.width_screen // 2, self.height_screen), 2)
+
+        """двигающаяся платформа"""
+        if self.level == 2:
+            self.screen.blit(self.snow, (self.snow_x, 545))
+            self.screen.blit(self.snow, (self.snow_x + 512, 545))
+            self.screen.blit(self.snow, (self.snow_x + 1024, 545))
+            self.snow_x -= 2
+            if self.snow_x == -800:
+                self.snow_x = 0
 
         """поле игроков"""
         self.screen.blit(pygame.image.load("game_img/channels4_profile.jpg"), (self.width_screen // 2, 0))
@@ -63,7 +74,7 @@ class LevelOne:
         self.mobs = mobs
         self.time_score = 200
         self.time_level = 0
-        self.sound_effect_level = [True, True]
+        self.sound_effect_level = True
 
     def draw_snows(self):
         self.snows.update()
@@ -71,16 +82,78 @@ class LevelOne:
 
     def check_mobs_contact(self):
         if pygame.sprite.spritecollide(self.player, self.mobs, True):
+            m = Mob()
+            self.snows.add(m)
+            self.mobs.add(m)
             if self.score > 0:
                 self.score -= 5
                 if clicked_sound_effects:
                     sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[3]}')
                     sound.play()
                 self.time_score = 200
-                for i in range(1):
-                    m = Mob()
-                    self.snows.add(m)
-                    self.mobs.add(m)
+        else:
+            self.time_score -= 1
+            if self.time_score == 0:
+                self.score += 5
+                if clicked_sound_effects:
+                    sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[0]}')
+                    sound.play()
+                self.time_score = 200
+
+    def draw_score(self):
+        font = pygame.font.SysFont('bold', 50)
+        text = font.render(f'Score: {self.score}', True, (255, 255, 255))
+        self.screen.blit(text, (pygame.display.Info().current_w // 2 - 200, 20))
+
+    def get_score(self):
+        return self.score
+
+    def reset_score(self):
+        self.score = 0
+
+    def draw_time_level(self):
+        self.time_level += 0.020
+        if round(self.time_level) < 114:
+            color_time = pygame.Color(216, 209, 70)
+            pygame.draw.rect(self.screen, color_time,
+                             (pygame.display.Info().current_w // 2 + 73, 33, self.time_level, 15),
+                             border_radius=15)
+        else:
+            if clicked_sound_effects and self.sound_effect_level:
+                sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[5]}')
+                sound.play()
+                self.sound_effect_level = False
+
+    def get_time_level(self):
+        return self.time_level
+
+
+class LevelThree:
+    def __init__(self, ice, ice_mobs, screen, player):
+        self.ice = ice
+        self.ice_mobs = ice_mobs
+        self.screen = screen
+        self.score = 0
+        self.player = player
+        self.time_score = 200
+        self.time_level = 0
+        self.sound_effect_level = True
+
+    def draw_snows(self):
+        self.ice.update()
+        self.ice.draw(self.screen)
+
+    def check_mobs_contact(self):
+        if pygame.sprite.spritecollide(self.player, self.ice_mobs, True):
+            m = IceMob()
+            self.ice.add(m)
+            self.ice_mobs.add(m)
+            if self.score > 0:
+                self.score -= 5
+                if clicked_sound_effects:
+                    sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[3]}')
+                    sound.play()
+                self.time_score = 200
         else:
             self.time_score -= 1
             if self.time_score == 0:
@@ -102,21 +175,17 @@ class LevelOne:
         self.score = 0
 
     def draw_time_level(self):
-        self.time_level += 0.02
-        if round(self.time_level) < 114:
-            if round(self.time_level >= 110) and clicked_sound_effects and self.sound_effect_level[0]:
-                sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[4]}')
-                sound.play()
-                self.sound_effect_level[0] = False
+        self.time_level += 0.020
+        if round(self.time_level) < 116:
             color_time = pygame.Color(216, 209, 70)
             pygame.draw.rect(self.screen, color_time,
                              (pygame.display.Info().current_w // 2 + 73, 33, self.time_level, 15),
                              border_radius=15)
         else:
-            if clicked_sound_effects and self.sound_effect_level[1]:
+            if clicked_sound_effects and self.sound_effect_level:
                 sound = pygame.mixer.Sound(f'music_and_sound_effects/{game_sound[5]}')
                 sound.play()
-                self.sound_effect_level[1] = False
+                self.sound_effect_level = False
 
     def get_time_level(self):
         return self.time_level
