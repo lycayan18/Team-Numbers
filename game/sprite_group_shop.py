@@ -4,6 +4,9 @@ import pygame
 class Switchskins(pygame.sprite.Sprite):  # рисовка спрайтов, и счётчик монет
     def __init__(self, screen):
         super().__init__()
+        self.game_skins = [
+            "game_img/sprite_1.png", "game_img/sprite_2.png", "game_img/sprite_3.png", "game_img/sprite_4.png"
+        ]
         self.image_skins = [
              "menu_img/sprite_1.png", "menu_img/sprite_2.png", "menu_img/sprite_3.png", "menu_img/sprite_4.png"
         ]

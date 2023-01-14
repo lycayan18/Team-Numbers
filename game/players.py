@@ -1,4 +1,4 @@
-import pygame
+﻿import pygame
 import random
 from Settings import game_sound, clicked_sound_effects
 
@@ -7,7 +7,8 @@ class PlayerTask(pygame.sprite.Sprite):
     def __init__(self, screen):
         super(PlayerTask, self).__init__()
         self.screen = screen
-        self.img = pygame.image.load("game_img/sprite_1.png")
+        self.skin_img = "game_img/sprite_1.png"
+        self.img = pygame.image.load(self.skin_img)
         self.rect = self.img.get_rect()
         self.rect.x = pygame.display.Info().current_w // 2 - 450
         self.rect.y = pygame.display.Info().current_h - 75
@@ -25,26 +26,31 @@ class PlayerTask(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self, *args, **kwargs) -> None:
-        pass
+        with open("name_skin", "r") as skin:
+            self.skin_img = skin.read()
+            self.img = pygame.image.load(self.skin_img)
 
     def move(self, command):
+        with open("name_skin", "r") as skin:
+            self.skin_img = skin.read()
+            self.img = pygame.image.load(self.skin_img)
         if command:
             if self.mright:
-                if self.rect.x <= 627:
+                if self.rect.x <= 607:
                     self.rect.x += 7
             elif self.mleft:
                 if self.rect.x > 4:
                     self.rect.x -= 7
         else:
             if self.mspace:
-                if 510 < self.rect.y <= 650:
+                if 490 < self.rect.y <= 650:
                     self.rect.y -= 20
-                if self.rect.y == 510 or self.rect.y == 500:
+                if 490 >= self.rect.y >= 475:
                     self.mspace = False
             else:
-                if (self.rect.y > 509 or self.rect.y == 500) and self.rect.y != 650:
+                if self.rect.y > 474 and self.rect.y != 650:
                     self.mspace = False
-                    self.rect.y += 10
+                    self.rect.y += 5
 
 
 class PlayerGame(pygame.sprite.Sprite):
@@ -53,7 +59,8 @@ class PlayerGame(pygame.sprite.Sprite):
     def __init__(self, screen):
         super(PlayerGame, self).__init__()
         self.screen = screen
-        self.img = pygame.image.load("game_img/sprite_1.png")
+        self.skin_img = "game_img/sprite_1.png"
+        self.img = pygame.image.load(self.skin_img)
         self.rect = self.img.get_rect()
         self.rect.x = 1160
         self.rect.y = 740
@@ -68,7 +75,9 @@ class PlayerGame(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self, *args, **kwargs) -> None:
-        pass
+        with open("name_skin", "r") as skin:
+            self.skin_img = skin.read()
+            self.img = pygame.image.load(self.skin_img)
 
     def check_score(self, score):
 
@@ -122,10 +131,19 @@ class PlayerGame(pygame.sprite.Sprite):
 class Bot:
     def __init__(self, screen):
         self.screen = screen
-        self.img = pygame.image.load("game_img/sprite_2.png")
+        with open("score_button", "r") as skins:
+            skins = skins.read().split("\n")
+            group_skin = skins[1].replace("[", "").replace("]", "").replace(",", "").split()
+            index_skin = []
+            for i in range(len(group_skin)):
+                if group_skin[i] != "0":
+                    index_skin.append(i)
+            skin_ = random.randint(0, 2)
+            self.images = "game_img/sprite_" + str(index_skin[skin_] + 1) + ".png"
+        self.img = pygame.image.load(self.images)
         self.rect = self.img.get_rect()
         self.rect.x = 1060
-        self.rect.y = 715
+        self.rect.y = 740
         self.speedy = 3
         self.sub_level = 0
         self.time_move = random.randint(1500, 2000)
@@ -142,26 +160,26 @@ class Bot:
     def check_pos_player_game(self, positions_list):
         if self.sub_level == 1 and positions_list[0] is False:
             self.rect.x = 1100
-            self.rect.y = 536
+            self.rect.y = 561
         elif self.sub_level == 1 and positions_list[0]:
             self.rect.x = 1000
-            self.rect.y = 536
+            self.rect.y = 561
         elif self.sub_level == 2 and positions_list[1] is False:
             self.rect.x = 1035
-            self.rect.y = 354
+            self.rect.y = 379
         elif self.sub_level == 2 and positions_list[1]:
             self.rect.x = 935
-            self.rect.y = 354
+            self.rect.y = 379
         elif self.sub_level == 3 and positions_list[2] is False:
             self.rect.x = 1035
-            self.rect.y = 155
+            self.rect.y = 180
         elif self.sub_level == 3 and positions_list[2]:
             self.rect.x = 935
-            self.rect.y = 155
+            self.rect.y = 180
 
     def reset(self):
         self.rect.x = 1060
-        self.rect.y = 715
+        self.rect.y = 740
         self.sub_level = 0
         self.speedy = 3
 

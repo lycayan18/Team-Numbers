@@ -28,7 +28,7 @@ class IceMob(pygame.sprite.Sprite):
         super(IceMob, self).__init__()
         self.image = pygame.image.load("game_img/ice.png")
         self.rect = self.image.get_rect()
-        self.rect.x = 620
+        self.rect.x = 640
         self.rect.y = 650
         self.speedx = 10
 

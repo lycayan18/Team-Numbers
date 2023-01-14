@@ -1,8 +1,8 @@
-import pygame
+﻿import pygame
 import sys
 import random
 import time
-from controls import button, draw_particle, update_particle,  loading, transition_figure
+from controls import button, draw_particle, update_particle, loading, transition_figure
 from sprite_group_shop import Switchskins
 from Settings import clicked_sound_effects, sound_click, Music, SoundEffects, game_sound
 from game import Game, LevelOne, LevelThree
@@ -34,12 +34,10 @@ class SpritesWindow:
             list_buttons = []
             game = Game(screen, snow_image)
             start_game = True
-
-            for i in range(9):
+            for i in range(11):
                 m = Mob()
                 snows.add(m)
                 mobs.add(m)
-
             for i in range(3):
                 m = IceMob()
                 ice.add(m)
@@ -70,6 +68,11 @@ class ButtonStartGame(pygame.sprite.Sprite):
             return
         event = args[0]
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+            with open("name_skin", "w") as skin:
+                skin.write(name_skins)
+            with open("score_button", "w") as s:
+                s.write(str(money) + "\n")
+                s.write(str(b) + "\n")
             if clicked_sound_effects:
                 sound_click.play()
             SpritesWindow(self.screen, 'start_game').draw_buttons()
@@ -273,7 +276,7 @@ class BackShop(BackButton, Switchskins):
                     self.image_but = 0
                     self.button_choose__[self.skins] = self.image_but
                     global name_skins
-                    name_skins = self.image_skins[self.skins]
+                    name_skins = self.game_skins[self.skins]
                     for _ in range(len(self.button_choose__)):
                         if self.button_choose__[_] == 0 and _ != self.skins:
                             self.button_choose__[_] = 1
@@ -517,6 +520,9 @@ with open("score_button", "r") as sc:
         image_button.append(int(im[i]))
     b = image_button
 
+with open("name_skin", "r") as skins:
+    name_skins = skins.read()
+
 
 def run():
     pygame.init()
@@ -540,5 +546,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-
-
