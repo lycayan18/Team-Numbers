@@ -4,7 +4,7 @@ import random
 import time
 from controls import button, draw_particle, update_particle, loading, transition_figure
 from sprite_group_shop import Switchskins
-from Settings import clicked_sound_effects, sound_click, Music, SoundEffects, game_sound
+from Settings import clicked_sound_effects, sound_click, game_sound, Settings
 from game import Game, LevelOne, LevelTwo
 from players import PlayerTask, PlayerGame, Bot
 from mobs import Mob, IceMob
@@ -34,17 +34,19 @@ class SpritesWindow:
             list_buttons = []
             game = Game(screen, snow_image)
             start_game = True
-            for i in range(11):
+
+            for number in range(11):
                 m = Mob()
                 snows.add(m)
                 mobs.add(m)
-            for i in range(3):
+
+            for number in range(3):
                 m = IceMob()
                 ice.add(m)
                 ice_mobs.add(m)
         elif self.command == 'settings':
             """настройки"""
-            list_buttons = [BackButton(self.screen), SoundEffects(self.screen), Music(self.screen)]
+            list_buttons = [BackButton(self.screen), Settings(screen)]
         elif self.command == 'shop':
             """магазин"""
             list_buttons = [BackShop(self.screen)]
@@ -307,7 +309,8 @@ def events(buttons_menu, game_start, player_task, game):
             sys.exit()
         if len(buttons_menu) > 0:
             for button in buttons_menu:
-                button.update(event)
+                if hasattr(button, "update"):
+                    button.update(event)
         if game_start:
             level = game.get_level()
             if event.type == pygame.KEYDOWN:
@@ -495,7 +498,8 @@ def update_screen(screen, buttons_menu, start, game, players, levels):
         update_particle(screen)
         if len(buttons_menu) > 0:
             for i in buttons_menu:
-                i.output()
+                if hasattr(i, "output"):
+                    i.output()
     pygame.display.flip()
 
 
